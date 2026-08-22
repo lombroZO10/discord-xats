@@ -1,10 +1,13 @@
+import { EventEmitter } from "node:events";
 import { WebSocket } from "ws";
 import { buildPacket, parsePackets } from "../protocol/xml.js";
 
 const TRANSIENT_LOGOUT_ERRORS = new Set(["e03", "e16", "f011", "e43"]);
 
-export class XatClient {
+export class XatClient extends EventEmitter {
     constructor(config, sessionStore) {
+        super();
+
         this.config = config;
         this.sessionStore = sessionStore;
 
@@ -19,6 +22,7 @@ export class XatClient {
         this.requestedReconnectDelay = null;
         this.keepaliveTimers = [];
         this.packetQueue = Promise.resolve();
+        this.users = new Map();
     }
 
     async start() {
@@ -65,9 +69,12 @@ export class XatClient {
         });
 
         socket.on("close", () => {
+            const wasReady = this.ready;
             if (this.socket === socket) this.socket = null;
             this.ready = false;
             this.clearKeepalive();
+
+            if (wasReady) this.emit("disconnected");
 
             if (this.stopped) return;
 
@@ -115,6 +122,15 @@ export class XatClient {
                 break;
             case "a":
                 this.handleAccountEvent(packet);
+                break;
+            case "u":
+                this.handleUserJoined(packet);
+                break;
+            case "l":
+                this.handleUserLeft(packet);
+                break;
+            case "m":
+                this.handleChatMessage(packet);
                 break;
             default:
                 break;
@@ -169,6 +185,7 @@ export class XatClient {
         this.reconnectAttempt = 0;
         this.startKeepalive();
         console.log(`[xat] Conectado ao chat ${this.config.chatId}.`);
+        this.emit("connected", { chatId: this.config.chatId });
     }
 
     async handleLogout(packet) {
@@ -206,6 +223,51 @@ export class XatClient {
         if (packet.k === "T" && this.session?.i) {
             this.send("v", { n: this.session.i, p: 0 });
         }
+    }
+
+    handleUserJoined(packet) {
+        const userId = this.normalizeUserId(packet.u);
+        if (!userId || Number(userId) >= 1_900_000_000) return;
+
+        this.users.set(userId, {
+            id: userId,
+            regname: packet.N || null,
+            nickname: this.cleanNickname(packet.n)
+        });
+    }
+
+    handleUserLeft(packet) {
+        const userId = this.normalizeUserId(packet.u);
+        if (userId) this.users.delete(userId);
+    }
+
+    handleChatMessage(packet) {
+        const text = packet.t?.trim();
+        if (!text || packet.s === "1" || text.startsWith("/")) return;
+
+        const userId = this.normalizeUserId(packet.u);
+        if (!userId) return;
+
+        const user = this.users.get(userId);
+        this.emit("message", {
+            userId,
+            regname: user?.regname || null,
+            nickname: user?.nickname || null,
+            text
+        });
+    }
+
+    normalizeUserId(value) {
+        if (value === null || value === undefined) return null;
+        return String(value).split("_", 1)[0] || null;
+    }
+
+    cleanNickname(value) {
+        if (!value) return null;
+        return value
+            .split("##", 1)[0]
+            .replace(/\(glow[^)]*\)|\(hat[^)]*\)/gi, "")
+            .trim() || null;
     }
 
     buildJoinPacket(handshake) {
@@ -318,5 +380,6 @@ export class XatClient {
 
         this.socket?.terminate();
         this.socket = null;
+        this.users.clear();
     }
 }

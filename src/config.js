@@ -27,6 +27,13 @@ const validUrl = (name, value, protocol) => {
     return parsed.toString();
 };
 
+const snowflake = (name, value) => {
+    if (!/^\d{17,20}$/.test(value)) {
+        throw new Error(`A variável ${name} deve conter um ID válido do Discord.`);
+    }
+    return value;
+};
+
 export const loadConfig = () => {
     const reconnectMaxMs = positiveInteger(
         "BOT_RECONNECT_MAX_MS",
@@ -48,6 +55,14 @@ export const loadConfig = () => {
             "https:"
         ),
         reconnectMaxMs,
+        discord: {
+            token: required("DISCORD_BOT_TOKEN"),
+            channelId: snowflake(
+                "DISCORD_CHANNEL_ID",
+                required("DISCORD_CHANNEL_ID")
+            ),
+            activity: process.env.DISCORD_ACTIVITY?.trim() || "xat.com"
+        },
         profile: {
             nick: process.env.BOT_NICK?.trim() || "Bot",
             status: process.env.BOT_STATUS?.trim() || "",

@@ -1,7 +1,7 @@
 {
     "name": "discord-xats",
-    "version": "0.1.0",
-    "description": "Minimal xat.com connection client for Node.js",
+    "version": "0.2.0",
+    "description": "One-way bridge from xat.com to Discord",
     "private": true,
     "type": "module",
     "license": "Apache-2.0",
@@ -13,9 +13,10 @@
         "start": "node src/index.js"
     },
     "engines": {
-        "node": ">=20"
+        "node": ">=24.17.0"
     },
     "dependencies": {
+        "discord.js": "14.27.0",
         "dotenv": "16.6.1",
         "ws": "8.21.3"
     }
