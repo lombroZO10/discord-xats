@@ -50,7 +50,9 @@ O bot aparecerá online com a atividade definida em `DISCORD_ACTIVITY` (padrão:
 
 ## Deploy no Ubuntu
 
-O pacote inclui uma unit `systemd` com usuário isolado, reinício em falhas e sessão persistida fora do código em `/var/lib/discord-xats`. Siga o roteiro completo em [`deploy/README.md`](deploy/README.md).
+Se a VPS já utiliza PM2, siga [`deploy/PM2.md`](deploy/PM2.md). A configuração cria somente o processo `discord-xats` e evita interferir nos outros bots.
+
+Como alternativa, o pacote inclui uma unit `systemd` com usuário isolado, reinício em falhas e sessão persistida fora do código em `/var/lib/discord-xats`. O roteiro está em [`deploy/README.md`](deploy/README.md). Use apenas um gerenciador de processos para esta aplicação.
 
 ## Inicialização
 
