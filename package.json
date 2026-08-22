@@ -1,0 +1,22 @@
+{
+    "name": "discord-xats",
+    "version": "0.1.0",
+    "description": "Minimal xat.com connection client for Node.js",
+    "private": true,
+    "type": "module",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lombroZO10/discord-xats.git"
+    },
+    "scripts": {
+        "start": "node src/index.js"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "dependencies": {
+        "dotenv": "16.6.1",
+        "ws": "8.21.3"
+    }
+}
