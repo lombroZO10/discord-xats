@@ -2,8 +2,8 @@ import { mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 export class SessionStore {
-    constructor(filePath = resolve("cache", "login.json")) {
-        this.filePath = filePath;
+    constructor(filePath = "cache/login.json") {
+        this.filePath = resolve(filePath);
     }
 
     async load() {

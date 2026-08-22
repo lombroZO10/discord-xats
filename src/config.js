@@ -55,6 +55,7 @@ export const loadConfig = () => {
             "https:"
         ),
         reconnectMaxMs,
+        sessionFile: process.env.BOT_SESSION_FILE?.trim() || undefined,
         discord: {
             token: required("DISCORD_BOT_TOKEN"),
             channelId: snowflake(

@@ -1,0 +1,44 @@
+[Unit]
+Description=discord-xats bridge
+Documentation=https://github.com/lombroZO10/discord-xats
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=discord-xats
+Group=discord-xats
+WorkingDirectory=/opt/discord-xats
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/discord-xats/discord-xats.env
+ExecStart=/usr/bin/node /opt/discord-xats/src/index.js
+StateDirectory=discord-xats
+StateDirectoryMode=0700
+
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

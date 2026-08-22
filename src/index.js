@@ -11,7 +11,7 @@ let discordBridge = null;
 
 try {
     const config = loadConfig();
-    const sessionStore = new SessionStore();
+    const sessionStore = new SessionStore(config.sessionFile);
     discordBridge = new DiscordBridge(config.discord);
     xatClient = new XatClient(config, sessionStore);
 

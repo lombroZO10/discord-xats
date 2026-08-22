@@ -48,6 +48,10 @@ Nunca publique o token do Discord. Caso ele seja exposto, regenere-o imediatamen
 
 O bot aparecerá online com a atividade definida em `DISCORD_ACTIVITY` (padrão: `xat.com`).
 
+## Deploy no Ubuntu
+
+O pacote inclui uma unit `systemd` com usuário isolado, reinício em falhas e sessão persistida fora do código em `/var/lib/discord-xats`. Siga o roteiro completo em [`deploy/README.md`](deploy/README.md).
+
 ## Inicialização
 
 ```bash
